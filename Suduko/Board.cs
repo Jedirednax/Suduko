@@ -10,6 +10,7 @@ namespace Suduko
     }
     public class Board
     {
+        public Random random = new Random();
 
         #region Board Properties
         private int BlockSize { get; set; }
@@ -21,7 +22,7 @@ namespace Suduko
         public int[,] Grid { get; set; }
 
         public int[,] Puzzle;
-        public int[,] Solution =
+        public int[,] Solution; /*=
         {
             { 3, 4, 6, 5, 2, 9, 8, 7, 1 },
             { 5, 7, 1, 3, 6, 8, 4, 2, 9 },
@@ -59,6 +60,20 @@ namespace Suduko
         };
         public int[,] Hard =
         {
+            { 0, 0, 0, 5, 0, 0, 0, 7, 0 },
+            { 5, 0, 0, 0, 0, 8, 0, 2, 9 },
+            { 0, 9, 8, 4, 0, 1, 3, 0, 5 },
+            { 0, 2, 0, 7, 0, 4, 0, 0, 0 },
+            { 0, 0, 5, 2, 0, 0, 0, 0, 7 },
+            { 0, 0, 0, 0, 0, 0, 0, 5, 0 },
+            { 4, 8, 0, 9, 0, 0, 7, 0, 0 },
+            { 0, 0, 0, 8, 0, 2, 0, 0, 0 },
+            { 0, 0, 0, 0, 4, 0, 2, 0, 0 },
+        };
+
+        /*
+         public int[,] Hard =
+        {
             { 0, 0, 0, 5, 0, 0, 0, 0, 0 },
             { 5, 0, 0, 0, 0, 8, 0, 2, 0 },
             { 0, 9, 8, 4, 0, 1, 0, 0, 5 },
@@ -68,8 +83,7 @@ namespace Suduko
             { 4, 8, 0, 0, 0, 0, 7, 0, 0 },
             { 0, 0, 0, 8, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0, 2, 0, 0 },
-        };
-
+        };*/
         #endregion
 
         #region Board Generation
@@ -84,16 +98,25 @@ namespace Suduko
             NumberOfBlocks = BoardSize;
 
             NumberOfCells = BlockSize * BoardSize;
-            Puzzle = Easy;
 
-            Grid = new int[BoardSize, BoardSize];
+            Solution = new int[BoardSize, BoardSize];
             for(int row = 0; row < BoardSize; row++)
             {
                 for(int column = 0; column < BoardSize; column++)
                 {
-                    Grid[row, column] = Puzzle[row, column];
+                    Solution[row, column] =0;
                 }
             }
+            //Puzzle = Grid;
+
+            GenerateBoard();
+            //for(int row = 0; row < BoardSize; row++)
+            //{
+            //    for(int column = 0; column < BoardSize; column++)
+            //    {
+            //        Grid[row, column] = Puzzle[row, column];
+            //    }
+            //}
         }
 
         /// <summary>
@@ -111,13 +134,13 @@ namespace Suduko
             switch(diff)
             {
                 case Difficulty.Easy:
-                    Puzzle = Easy;
+                    //Puzzle = Easy;
                     break;
                 case Difficulty.Medium:
-                    Puzzle = Medium;
+                    //Puzzle = Medium;
                     break;
                 case Difficulty.Hard:
-                    Puzzle = Hard;
+                    //Puzzle = Hard;
                     break;
             }
 
@@ -147,10 +170,7 @@ namespace Suduko
                 Grid[row, column] = cellValue;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         /// <summary>
@@ -163,19 +183,23 @@ namespace Suduko
         /// <returns> Returns if the value can be inserted. </returns>
         public bool SafeInsert(int row, int column, int cellValue)
         {
-            if(Puzzle[row, column] == 0)
+            if(row >= BoardSize ||  column >= BoardSize)
             {
-                if(IsSafe(row, column, cellValue))
-                {
-                    Grid[row, column] = cellValue;
-                    return true;
-                }
-                else { return false; }
+                return false;
+            }
+            if(Puzzle[row, column] != 0)
+            {
+                return false;
+            }
+            if(IsSafe(row, column, cellValue))
+            {
+                Grid[row, column] = cellValue;
             }
             else
             {
                 return false;
             }
+            return true;
         }
 
         /// <summary>
@@ -183,9 +207,67 @@ namespace Suduko
         /// </summary>
         public void ConstraintSolve()
         {
-            Console.ReadLine();
+            int counter = 0;
             do
             {
+                for(int i = 0; i < BoardSize; i++)
+                {
+                    for(int j = 0; j < BoardSize; j++)
+                    {
+                        int[] cell = CellPossible(i, j);
+                        if(cell != null && cell.Length == 1)
+                        {
+                            SafeInsert(i, j, cell[0]);
+                        }
+                    }
+                }
+                counter++;
+            }
+            while(!CompareBoard()||counter<10);
+        }
+
+        public void EliminateSolve()
+        {
+            int count = 0;
+            do
+            {
+                for(int i = 0; i < BoardSize; i++)
+                {
+                    for(int j = 0; j < BoardSize; j++)
+                    {
+                        if(Grid[i, j] == 0)
+                        {
+
+                            int[] row = ElimRow(i, j);
+                            int[] col = ElimCol(i, j);
+                            int[] blk = ElimBlock(i, j);
+                            try
+                            {
+                                if(row != null && row.Length==1)
+                                {
+                                    Insert(i, j, row.First());
+                                }
+                            }
+                            catch { }
+                            try
+                            {
+                                if(col != null && col.Length==1)
+                                {
+                                    Insert(i, j, col.First());
+                                }
+                            }
+                            catch { }
+                            try
+                            {
+                                if(blk != null && blk.Length==1)
+                                {
+                                    Insert(i, j, blk.First());
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+                }
                 for(int i = 0; i < 9; i++)
                 {
                     for(int j = 0; j < 9; j++)
@@ -193,43 +275,49 @@ namespace Suduko
                         int[] cell = CellPossible(i, j);
                         if(cell != null && cell.Length == 1)
                         {
-                            Console.Clear();
-                            ConsoleDisplay();
                             SafeInsert(i, j, cell[0]);
-                            Thread.Sleep(250);
                         }
                     }
                 }
+                count++;
             }
-            while(!CompareBoard());
+            while(!CompareBoard()||count<10);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public void EliminateSolve()
+        public bool BackTrackingSolve(int row, int column)
         {
-            for(int i = 0; i < 9; i++)
+            if(row == BoardSize-1 && column ==BoardSize)
             {
-                for(int j = 0; j < 9; j++)
-                {
-
-                }
+                return true;
             }
-            ConsoleDisplay();
+            if(column == BoardSize)
+            {
+                row +=1;
+                column = 0;
+            }
+            if(Grid[row, column] != 0)
+            {
+                column+=1;
+                return BackTrackingSolve(row, column);
+            }
+            int[] val = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            random.Shuffle(val);
+            foreach(int cell in val)
+            {
+                if(IsSafe(row, column, cell))
+                {
+                    Grid[row, column] = cell;
+                    if(BackTrackingSolve(row, column+1))
+                    {
+                        return true;
+                    }
+                }
+                Grid[row, column] = 0;
+            }
+            return false;
+
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public void BackTrackingSove()
-        {
-
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public void BruteSolve()
         {
             do
@@ -248,9 +336,6 @@ namespace Suduko
             while(!CompareBoard());
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public void Reveal()
         {
             for(int row = 0; row < BoardSize; row++)
@@ -262,11 +347,6 @@ namespace Suduko
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="row"></param>
-        /// <returns> </returns>
         public int[] GetRow(int row)
         {
             int[] res = new int[BoardSize];
@@ -280,11 +360,6 @@ namespace Suduko
             return res;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="column"></param>
-        /// <returns> </returns>
         public int[] GetColumn(int column)
         {
             int[] res = new int[BoardSize];
@@ -298,12 +373,6 @@ namespace Suduko
             return res;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="row"></param>
-        /// <param name="column"></param>
-        /// <returns> </returns>
         public int[] GetBlock(int row, int column)
         {
             int[] res = new int[BoardSize];
@@ -316,6 +385,7 @@ namespace Suduko
             {
                 for(int j = columnBlock; j < (columnBlock + BlockSize); j++)
                 {
+
                     if(Grid[i, j] != 0)
                     {
                         res[blockIndex++] = Grid[i, j];
@@ -331,101 +401,225 @@ namespace Suduko
 
         #region Checks
 
-        /// <summary>
-        /// Gets a list of values that can be entered in to the cell based off of contrsints
-        /// <see cref="CheckRow(int, int)"/>
-        /// <see cref="CheckColumn(int, int)"/>
-        /// <see cref="CheckBlock(int, int, int)"/>
-        /// </summary>
-        /// <param name="row"> The row if the cell to check </param>
-        /// <param name="column"> The column of the cell to check </param>
-        /// <returns> returns an array of posisble values that can beentered </returns>
         public int[] CellPossible(int row, int column)
         {
+            if(row >= BoardSize ||  column >= BoardSize)
+            {
+                return null;
+            }
             if(Grid[row, column] == 0)
             {
                 List<int> possible = new List<int>();
 
-                for(int i = 1; i<=BoardSize; i++)
+                for(int i = 0; i < BoardSize; i++)
                 {
-                    if(IsSafe(row, column, i))
+                    if(IsSafe(row, column, i+1))
                     {
-                        possible.Add(i);
+                        possible.Add(i+1);
                     }
                 }
                 return possible.ToArray();
             }
             else
             {
-                return new int[9];
+                return new int[BoardSize];
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="row"></param>
-        /// <param name="column"></param>
+        public void LastCell()
+        {
+
+        }
+
+        public void LastCellRow(int row)
+        {
+
+        }
+
+        public void LastCellColumn(int column)
+        {
+
+        }
+
+        public void LastCellBlock(int row, int column)
+        {
+
+        }
+
+        public void RemaningPossible()
+        {
+            for(int i = 0; i < BoardSize; i++)
+            {
+                for(int j = 0; j < BoardSize; j++)
+                {
+                    if(Grid[i, j] == 0)
+                    {
+                        int[] row = ElimRow(i, j);
+                        try
+                        {
+                            if(row != null && row.Length==1)
+                            {
+                                Insert(i, j, row.First());
+                                break;
+                            }
+                        }
+                        catch { }
+                        int[] col = ElimCol(i, j);
+                        try
+                        {
+                            if(col != null && col.Length==1)
+                            {
+                                Insert(i, j, col.First());
+                                break;
+                            }
+                        }
+                        catch { }
+                        int[] blk = ElimBlock(i, j);
+                        try
+                        {
+                            if(blk != null && blk.Length==1)
+                            {
+                                Insert(i, j, blk.First());
+                                break;
+                            }
+                        }
+                        catch { }
+                    }
+                }
+            }
+        }
+
+        public void NakedPair()
+        {
+
+        }
+
+        public void HiddenPair()
+        {
+
+        }
+
+        public void XWing()
+        {
+
+        }
+        public void YWing()
+        {
+        }
+
+        public void PointingPair()
+        {
+
+        }
+
+        public void SwordFish()
+        {
+
+        }
+
+        public int[] ElimRow(int row, int currCol)
+        {
+            int[] currRow = CellPossible(row, currCol);
+            List<int> hold = new List<int>();
+            for(int i = 0; i < BoardSize; i++)
+            {
+                if(i != currCol)
+                {
+                    hold.AddRange(CellPossible(row, i));
+                }
+            }
+            List<int> res = new List<int>();
+            foreach(int i in currRow)
+            {
+                if(!hold.Contains(i))
+                {
+                    res.Add(i);
+                }
+            }
+            return res.ToArray();
+        }
+
+        public int[] ElimCol(int currRow, int col)
+        {
+            int[] currCol = CellPossible(currRow, col);
+            List<int> hold = new List<int>();
+            for(int i = 0; i < BoardSize; i++)
+            {
+                if(i != currRow)
+                {
+                    hold.AddRange(CellPossible(i, col));
+                }
+            }
+            List<int> res = new List<int>();
+            foreach(int i in currCol)
+            {
+                if(!hold.Contains(i))
+                {
+                    res.Add(i);
+                }
+            }
+            return res.ToArray();
+        }
+
+        public int[] ElimBlock(int row, int col)
+        {
+
+            int[] currCol = CellPossible(row, col);
+            List<int> hold = new List<int>();
+
+            int rowBlock = row/BlockSize*BlockSize;
+            int columnBlock = col/BlockSize*BlockSize;
+
+            for(int i = rowBlock; i < (rowBlock + BlockSize); i++)
+            {
+                for(int j = columnBlock; j < (columnBlock + BlockSize); j++)
+                {
+                    if(!(i == row && j== col))
+                    {
+                        hold.AddRange(CellPossible(i, j));
+                    }
+                }
+            }
+            List<int> res = new List<int>();
+            foreach(int g in currCol)
+            {
+                if(!hold.Contains(g))
+                {
+                    res.Add(g);
+                }
+            }
+            return res.ToArray();
+        }
+
         public void CheckElem(int row, int column)
         {
 
         }
 
-        /// <summary>
-        /// Returns is the all three constraints are met for a valid number
-        /// </summary>
-        /// <param name="row"> The row if the cell to check. </param>
-        /// <param name="column"> The column of the cell to check. </param>
-        /// <param name="cellValue"> The value being checked. </param>
-        /// <returns> Returns true if all there cinditions are true, else returns false. </returns>
         public bool IsSafe(int row, int column, int cellValue)
         {
             bool validRow = CheckRow(row, cellValue);
             bool validColumn = CheckColumn(column, cellValue);
             bool validBlock = CheckBlock(row, column, cellValue);
             bool result =  validRow && validColumn && validBlock &&true;
-            //Debug.WriteLine($"|({row}:{column})={cellValue} | R {validRow,-6} | C {validColumn,-6}| B {validBlock,-6}", "IsSafe");
             return result;
         }
 
-        /// <summary>
-        /// Checks if the selected row contains the passed in value.
-        /// </summary>
-        /// <param name="row"> The row to check. </param>
-        /// <param name="cellValue"> Value to look for. </param>
-        /// <returns> if the row contains the value returns false. </returns>
         public bool CheckRow(int row, int cellValue)
         {
             return !GetRow(row).Contains(cellValue);
         }
 
-        /// <summary>
-        /// Checks if the selected column contains the passed in value.
-        /// </summary>
-        /// <param name="column"> The column to check. </param>
-        /// <param name="cellValue"> Value to look for. </param>
-        /// <returns> if the row contains the value returns false. </returns> 
         public bool CheckColumn(int column, int cellValue)
         {
             return !GetColumn(column).Contains(cellValue);
         }
 
-        /// <summary>
-        /// Checks if the selected block contains the passed in value.
-        /// </summary>
-        /// <param name="row"> The row to check. </param>
-        /// <param name="column"> The column to check. </param>
-        /// <param name="cellValue"> Value to look for. </param>
-        /// <returns> If the block contains the value returns false. </returns>
         public bool CheckBlock(int row, int column, int cellValue)
         {
             return !GetBlock(row, column).Contains(cellValue);
         }
 
-        /// <summary>
-        /// Campars the board to the solution board.
-        /// </summary>
-        /// <returns> </returns>
         public bool CheckBoard()
         {
             for(int row = 0; row < BoardSize; row++)
@@ -446,10 +640,6 @@ namespace Suduko
             return true;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns> If the grid board is the same as the Solution board. </returns>
         public bool CompareBoard()
         {
             for(int row = 0; row < BoardSize; row++)
@@ -466,6 +656,55 @@ namespace Suduko
         }
         #endregion
         #endregion
+
+        public void GenerateBoard()
+        {
+
+            int[] values = {1,2,3,4,5,6,7,8,9};
+
+            for(int row = 0; row < BlockSize; row++)
+            {
+
+                int rowBlock = row*3/BlockSize*BlockSize;
+                int columnBlock = row*3/BlockSize*BlockSize;
+                int blockIndex = 0;
+                random.Shuffle(values);
+                for(int i = rowBlock; i < (rowBlock + BlockSize); i++)
+                {
+                    for(int j = columnBlock; j < (columnBlock + BlockSize); j++)
+                    {
+                        Solution[i, j] = values[blockIndex++];
+                    }
+                }
+            }
+            Grid = Solution;
+
+            BackTrackingSolve(0, 0);
+            SetBoard();
+        }
+
+        public void SetBoard()
+        {
+            for(int row = 0; row < 46;)
+            {
+
+                int x = random.Next(BoardSize);
+                int y = random.Next(BoardSize);
+                if(Grid[x, y] != 0)
+                {
+                    Grid[x, y] = 0;
+                    row++;
+                }
+            }
+            Puzzle = new int[BoardSize, BoardSize];
+            for(int row = 0; row < BoardSize; row++)
+            {
+                for(int column = 0; column < BoardSize; column++)
+                {
+                    Puzzle[row, column]= Grid[row, column];
+                }
+            }
+        }
 
         #region Display
 
@@ -615,3 +854,20 @@ namespace Suduko
         #endregion
     }
 }
+
+/*
+ 
++-------+-------+-------+
+| 0 0 0 | 5 0 0 | 0 0 0 |
+| 5 0 0 | 0 0 8 | 0 2 0 |
+| 0 9 8 | 4 0 1 | 0 0 5 |
++-------+-------+-------+
+| 0 0 0 | 7 5 4 | 0 0 0 |
+| 0 0 5 | 0 0 0 | 0 0 7 |
+| 0 0 0 | 0 0 0 | 0 5 0 |
++-------+-------+-------+
+| 4 8 0 | 0 0 5 | 7 0 0 |
+| 0 0 0 | 8 0 0 | 5 0 0 |
+| 0 5 0 | 0 0 0 | 2 0 0 |
++-------+-------+-------+
+*/

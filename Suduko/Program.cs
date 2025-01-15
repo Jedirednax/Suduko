@@ -4,13 +4,23 @@
     {
         static void Main(string[] args)
         {
-            Board board = new Board(Difficulty.Easy, 3);
+            //Console.SetWindowPosition(0, 0);
+            //Board board = new Board(Difficulty.Easy, 3);
+            Board board = new Board( 3);
 
             board.ConsoleDisplay();
-            board.ConstraintSolve();
+            //board.ConstraintSolve();
+            //board.EliminateSolve();
+            //board.LastCell();
+            //Console.Clear();
+            //board.ConsoleDisplay();
+            Console.ReadLine();
 
-            Console.Clear();
+            board.EliminateSolve();
             board.ConsoleDisplay();
+            board.BackTrackingSolve(0, 0);
+            board.ConsoleDisplay();
+
         }
         public static void DisplayPos()
         {
