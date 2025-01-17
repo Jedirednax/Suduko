@@ -5,20 +5,23 @@
         static void Main(string[] args)
         {
             //Console.SetWindowPosition(0, 0);
-            //Board board = new Board(Difficulty.Easy, 3);
-            Board board = new Board( 3);
+            //IntergerBoard board = new IntergerBoard(Difficulty.Easy, 3);
+            IntergerBoard board = new IntergerBoard( 3);
+
+            //Console.WriteLine(board.ToString());
 
             board.ConsoleDisplay();
+            Console.WriteLine(board.SolveBoard());
             //board.ConstraintSolve();
             //board.EliminateSolve();
             //board.LastCell();
             //Console.Clear();
             //board.ConsoleDisplay();
-            Console.ReadLine();
+            //Console.ReadLine();
 
-            board.EliminateSolve();
-            board.ConsoleDisplay();
-            board.BackTrackingSolve(0, 0);
+            //board.EliminateSolve();
+            //board.ConsoleDisplay();
+            //board.BackTrackingSolve(0, 0);
             board.ConsoleDisplay();
 
         }
@@ -31,7 +34,7 @@
         }
         public static void UserIn()
         {
-            Board board = new Board();
+            IntergerBoard board = new IntergerBoard();
             //board.ConsoleDisplay();
             board.GridDisplay();
             //board.CursorFill();
@@ -92,43 +95,43 @@
                     if(inputKey.Key == ConsoleKey.D1 || inputKey.Key == ConsoleKey.NumPad1)
                     {
 
-                        board.Insert(posIn.Top, posIn.Left, 1);
+                        board.Set(posIn.Top, posIn.Left, 1);
                     }
                     else if(inputKey.Key == ConsoleKey.D2 || inputKey.Key == ConsoleKey.NumPad2)
                     {
-                        board.Insert(posIn.Top, posIn.Left, 2);
+                        board.Set(posIn.Top, posIn.Left, 2);
                     }
                     else if(inputKey.Key == ConsoleKey.D3 || inputKey.Key == ConsoleKey.NumPad3)
                     {
-                        board.Insert(posIn.Top, posIn.Left, 3);
+                        board.Set(posIn.Top, posIn.Left, 3);
                     }
                     else if(inputKey.Key == ConsoleKey.D4 || inputKey.Key == ConsoleKey.NumPad4)
                     {
-                        board.Insert(posIn.Top, posIn.Left, 4);
+                        board.Set(posIn.Top, posIn.Left, 4);
                     }
                     else if(inputKey.Key == ConsoleKey.D5 || inputKey.Key == ConsoleKey.NumPad5)
                     {
-                        board.Insert(posIn.Top, posIn.Left, 5);
+                        board.Set(posIn.Top, posIn.Left, 5);
                     }
                     else if(inputKey.Key == ConsoleKey.D6 || inputKey.Key == ConsoleKey.NumPad6)
                     {
-                        board.Insert(posIn.Top, posIn.Left, 6);
+                        board.Set(posIn.Top, posIn.Left, 6);
                     }
                     else if(inputKey.Key == ConsoleKey.D7 || inputKey.Key == ConsoleKey.NumPad7)
                     {
-                        board.Insert(posIn.Top, posIn.Left, 7);
+                        board.Set(posIn.Top, posIn.Left, 7);
                     }
                     else if(inputKey.Key == ConsoleKey.D8 || inputKey.Key == ConsoleKey.NumPad8)
                     {
-                        board.Insert(posIn.Top, posIn.Left, 8);
+                        board.Set(posIn.Top, posIn.Left, 8);
                     }
                     else if(inputKey.Key == ConsoleKey.D9 || inputKey.Key == ConsoleKey.NumPad9)
                     {
-                        board.Insert(posIn.Top, posIn.Left, 9);
+                        board.Set(posIn.Top, posIn.Left, 9);
                     }
                     else if(inputKey.Key == ConsoleKey.D0 || inputKey.Key == ConsoleKey.NumPad0)
                     {
-                        board.Insert(posIn.Top, posIn.Left, 0);
+                        board.Set(posIn.Top, posIn.Left, 0);
                     }
                     else
                     {
