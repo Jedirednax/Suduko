@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Suduko", "Suduko\Suduko.csproj", "{32D4BC20-8C20-4D31-B580-CF453AD4205D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3118BB67-1092-438F-9BBE-1A51DF14A37F} = {3118BB67-1092-438F-9BBE-1A51DF14A37F}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SudukoBoardLibary", "SudukoBoardLibary\SudukoBoardLibary.csproj", "{3118BB67-1092-438F-9BBE-1A51DF14A37F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,8 +18,12 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{32D4BC20-8C20-4D31-B580-CF453AD4205D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{32D4BC20-8C20-4D31-B580-CF453AD4205D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{32D4BC20-8C20-4D31-B580-CF453AD4205D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{32D4BC20-8C20-4D31-B580-CF453AD4205D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32D4BC20-8C20-4D31-B580-CF453AD4205D}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{32D4BC20-8C20-4D31-B580-CF453AD4205D}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{3118BB67-1092-438F-9BBE-1A51DF14A37F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3118BB67-1092-438F-9BBE-1A51DF14A37F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3118BB67-1092-438F-9BBE-1A51DF14A37F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3118BB67-1092-438F-9BBE-1A51DF14A37F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,144 +4,239 @@
     {
         static void Main(string[] args)
         {
-            //Console.SetWindowPosition(0, 0);
-            //IntergerBoard board = new IntergerBoard(Difficulty.Easy, 3);
-            IntergerBoard board = new IntergerBoard( 3);
+            Console.SetWindowSize(161, 55);
 
-            //Console.WriteLine(board.ToString());
+            int[,] InBoard = new int[,]{
+            //{7,0,0,0,8,0,0,3,0},
+            //{0,0,0,0,2,0,9,0,0},
+            //{0,0,0,5,6,0,0,0,8},
+            //{0,0,3,0,0,0,8,0,0},
+            //{0,0,0,0,0,0,0,5,9},
+            //{8,0,0,0,3,9,1,0,7},
+            //{0,7,0,0,0,8,0,0,0},
+            //{0,0,4,0,0,1,0,6,0},
+            //{3,0,1,0,0,6,7,0,0},
 
-            board.ConsoleDisplay();
-            Console.WriteLine(board.SolveBoard());
-            //board.ConstraintSolve();
-            //board.EliminateSolve();
-            //board.LastCell();
-            //Console.Clear();
-            //board.ConsoleDisplay();
-            //Console.ReadLine();
+           // {7,1,0,9,8,4,6,3,0,},
+           // {0,0,8,1,2,3,9,7,0,},
+           // {0,3,9,5,6,7,0,1,8,},
+           // {0,0,3,0,0,5,8,0,6,},
+           // {0,0,7,8,0,2,3,5,9,},
+           // {8,0,0,6,3,9,1,0,7,},
+           // {0,7,6,3,0,8,0,9,1,},
+           // {0,8,4,0,0,1,0,6,3,},
+           // {3,0,1,0,0,6,7,8,0,},
 
-            //board.EliminateSolve();
-            //board.ConsoleDisplay();
-            //board.BackTrackingSolve(0, 0);
-            board.ConsoleDisplay();
+               {2,0,0,0,0,0,0,0,0},
+               {0,0,0,4,0,0,1,0,6},
+               {0,0,0,0,7,0,4,0,0},
+               {0,0,5,0,0,0,6,0,0},
+               {6,0,0,0,0,0,0,0,2},
+               {0,7,8,0,2,0,0,0,9},
+               {9,0,7,0,0,0,0,3,0},
+               {0,0,0,1,0,0,7,0,0},
+               {1,0,0,0,0,6,5,0,0},
+            };
 
-        }
-        public static void DisplayPos()
-        {
-            (int Left, int Top) hold = Console.GetCursorPosition();
-            Console.SetCursorPosition(0, 0);
-            Console.WriteLine($"{hold,-10}");
-            Console.SetCursorPosition(hold.Left, hold.Top);
-        }
-        public static void UserIn()
-        {
-            IntergerBoard board = new IntergerBoard();
-            //board.ConsoleDisplay();
-            board.GridDisplay();
-            //board.CursorFill();
-            ConsoleKeyInfo inputKey;
-            //Console.WriteLine(Console.GetCursorPosition());
-            Console.SetCursorPosition(2, 2);
+            // SudokuSolver solver = new SudokuSolver(InBoard);
 
-            (int Left, int Top) OffSet = Console.GetCursorPosition();
+            //solver.ColourBoardDisplay();
+            // solver.SolveBoard();
 
-            int LRMove = 2;
-            int UDMove = 1;
+            // solver.ColourBoardDisplay();
+            // solver.SolveBoard();
 
-            int LRCount = 0;
-            int UDCount = 0;
-            do
-            {
-                DisplayPos();
-                (int Left, int Top) pos = Console.GetCursorPosition();
-                inputKey = Console.ReadKey();
-                if(inputKey.Key == ConsoleKey.LeftArrow)
-                {
-                    if(pos.Left>=3)
-                    {
-                        Console.SetCursorPosition(pos.Left - LRMove, pos.Top);
-                        LRCount++;
-                    }
-                }
-                else if(inputKey.Key == ConsoleKey.RightArrow)
-                {
-                    if(pos.Left<37)
-                    {
-                        Console.SetCursorPosition(pos.Left + LRMove, pos.Top);
-                        LRCount--;
-                    }
-                }
-                else if(inputKey.Key == ConsoleKey.UpArrow)
-                {
-                    if(pos.Top>2)
-                    {
-                        Console.SetCursorPosition(pos.Left, pos.Top -UDMove);
-                        UDCount--;
-                    }
-                }
-                else if(inputKey.Key == ConsoleKey.DownArrow)
-                {
-                    if(pos.Top<27)
-                    {
-                        Console.SetCursorPosition(pos.Left, pos.Top +UDMove);
-                        UDCount++;
-                    }
-                }
-                else
-                {
-                    (int Left, int Top) hold = Console.GetCursorPosition();
-                    (int Left, int Top) posIn = pos;
-                    posIn.Top = (pos.Top-1)/2;
-                    posIn.Left = (pos.Left-1)/3;
-                    if(inputKey.Key == ConsoleKey.D1 || inputKey.Key == ConsoleKey.NumPad1)
-                    {
+            // solver.ColourBoardDisplay();
 
-                        board.Set(posIn.Top, posIn.Left, 1);
-                    }
-                    else if(inputKey.Key == ConsoleKey.D2 || inputKey.Key == ConsoleKey.NumPad2)
-                    {
-                        board.Set(posIn.Top, posIn.Left, 2);
-                    }
-                    else if(inputKey.Key == ConsoleKey.D3 || inputKey.Key == ConsoleKey.NumPad3)
-                    {
-                        board.Set(posIn.Top, posIn.Left, 3);
-                    }
-                    else if(inputKey.Key == ConsoleKey.D4 || inputKey.Key == ConsoleKey.NumPad4)
-                    {
-                        board.Set(posIn.Top, posIn.Left, 4);
-                    }
-                    else if(inputKey.Key == ConsoleKey.D5 || inputKey.Key == ConsoleKey.NumPad5)
-                    {
-                        board.Set(posIn.Top, posIn.Left, 5);
-                    }
-                    else if(inputKey.Key == ConsoleKey.D6 || inputKey.Key == ConsoleKey.NumPad6)
-                    {
-                        board.Set(posIn.Top, posIn.Left, 6);
-                    }
-                    else if(inputKey.Key == ConsoleKey.D7 || inputKey.Key == ConsoleKey.NumPad7)
-                    {
-                        board.Set(posIn.Top, posIn.Left, 7);
-                    }
-                    else if(inputKey.Key == ConsoleKey.D8 || inputKey.Key == ConsoleKey.NumPad8)
-                    {
-                        board.Set(posIn.Top, posIn.Left, 8);
-                    }
-                    else if(inputKey.Key == ConsoleKey.D9 || inputKey.Key == ConsoleKey.NumPad9)
-                    {
-                        board.Set(posIn.Top, posIn.Left, 9);
-                    }
-                    else if(inputKey.Key == ConsoleKey.D0 || inputKey.Key == ConsoleKey.NumPad0)
-                    {
-                        board.Set(posIn.Top, posIn.Left, 0);
-                    }
-                    else
-                    {
-
-                    }
-                    Console.Clear();
-                    board.ConsoleDisplay();
-                    Console.SetCursorPosition(hold.Left-1, hold.Top);
-                }
-            } while(inputKey.Key != ConsoleKey.Escape); /**/
+            //Console.WriteLine(solver.VerifyBoard());
         }
     }
 }
+/*
+}
+public static void ColourBoardDisplay(Cell[,] Grid, int[,] Clues, int[,] Solution)
+{
+    int BoardSize = Grid.GetLength(0);
+    int BlockSize = (int)Math.Sqrt(Grid.GetLength(1));
+    for(int row = 0; row < BoardSize; row++)
+    {
+        Console.WriteLine();
+        if(row%BlockSize == 0)
+        {
+            Console.Write($"{RowSep(BlockSize)}\n|");
+        }
+        else
+        {
+            Console.Write($"|");
+        }
+        for(int column = 0; column < BoardSize; column++)
+        {
+            Console.Write($"{" "}");
+            if(Grid[row, column].CellValue == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"{" "}");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+            else
+            {
+                if(Grid[row, column].CellValue == Clues[row, column])
+                {
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.Write($"{Grid[row, column]}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                else if(Grid[row, column].CellValue == Solution[row, column])
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write($"{Grid[row, column]}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write($"{Grid[row, column]}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+            }
+            if(((column+1)%BlockSize) == 0)
+            {
+                Console.Write($"{" "}");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"|");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+        }
+    }
+    Console.WriteLine($"\n{RowSep(BlockSize)}");
+}
+
+public static void ColourBoardDisplay(IntergerBoard board)
+{
+    for(int row = 0; row < board.BoardSize; row++)
+    {
+        Console.WriteLine();
+        if(row%board.BlockSize == 0)
+        {
+            Console.Write($"{RowSep(board.BlockSize)}\n|");
+        }
+        else
+        {
+            Console.Write($"|");
+        }
+        for(int column = 0; column < board.BoardSize; column++)
+        {
+            Console.Write($"{" "}");
+            if(board.Grid[row, column] == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"{" "}");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+            else
+            {
+                if(board.Grid[row, column] == board.Clues[row, column])
+                {
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.Write($"{board.Grid[row, column]}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                else if(board.Grid[row, column] == board.Solution[row, column])
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write($"{board.Grid[row, column]}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write($"{board.Grid[row, column]}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
+            }
+            if(((column+1)%board.BlockSize) == 0)
+            {
+                Console.Write($"{" "}");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.Write($"|");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+        }
+    }
+    Console.WriteLine($"\n{RowSep(board.BlockSize)}");
+}
+
+public static string RowSep(int size)
+{
+    StringBuilder sb = new StringBuilder("+");
+
+    for(int i = 0; i < size; i++)
+    {
+        for(int j = 0; j < size; j++)
+        {
+            sb.Append("--");
+        }
+        sb.Append("-+");
+    }
+
+    return sb.ToString();
+}
+}
+}
+/*
+* Begginer = {
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* };
+* Easy = {
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* {0,0,0,0,0,0,0,0,0},
+* };
+* Medium = {
+* {9,8,0,0,0,4,7,0,3},
+* {4,0,0,1,2,0,0,0,0},
+* {0,0,2,0,0,8,0,0,1},
+* {7,0,0,5,0,0,1,8,0},
+* {0,5,3,7,1,0,0,0,2},
+* {0,6,0,0,8,2,0,5,0},
+* {3,4,0,0,0,0,2,0,9},
+* {2,1,0,0,4,0,6,3,0},
+* {6,0,8,0,0,0,0,0,0},
+* };
+* Hard = {
+* {0,0,0,0,0,0,9,0,1},
+* {0,0,0,0,6,3,0,2,0},
+* {0,0,2,9,0,0,5,3,0},
+* {7,0,1,0,2,0,0,0,5},
+* {4,0,6,0,0,0,0,8,7},
+* {0,0,0,0,0,0,0,0,0},
+* {0,1,0,2,0,4,0,5,3},
+* {0,2,4,0,5,0,0,1,0},
+* {0,7,3,0,0,0,0,0,0},
+* };
+* Extreme = {
+* {7,0,0,0,8,0,0,3,0},
+* {0,0,0,0,2,0,9,0,0},
+* {0,0,0,5,6,0,0,0,8},
+* {0,0,3,0,0,0,8,0,0},
+* {0,0,0,0,0,0,0,5,9},
+* {8,0,0,0,3,9,1,0,7},
+* {0,7,0,0,0,8,0,0,0},
+* {0,0,4,0,0,1,0,6,0},
+* {3,0,1,0,0,6,7,0,0},
+* };
+*/
