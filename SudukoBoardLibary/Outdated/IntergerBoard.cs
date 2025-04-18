@@ -1,7 +1,7 @@
 ﻿//using System.Diagnostics;
 //using System.Text;
 
-//namespace SudukoBoardLibary
+//namespace SudokuBoardLibrary
 //{
 //    public enum Difficulty
 //    {
@@ -200,7 +200,7 @@
 //            Grid[row, column] = cellValue;
 
 //        }
-//        public int Get(int row, int column)
+//        public int GetCell(int row, int column)
 //        {
 //            return Grid[row, column];
 //        }

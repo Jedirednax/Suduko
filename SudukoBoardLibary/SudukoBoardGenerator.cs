@@ -1,24 +1,28 @@
-﻿namespace SudukoBoardLibary
+﻿namespace SudokuBoardLibrary
 {
     public class SudukoBoardGenerator
     {
 
-        public int BoardSize = 9;
-        public int BlockSize = 3;
+        public int BoardSize;
+        public int BlockSize;
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public Cell[,] Grid;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public static Random random = new Random();
-        public int[,] Solution= new int[9,9];
-        SudokuSolver solver;
-        public int NumberOfCells = 75;
-        public Cell[,] GenerateBoard()
-        {
-            int[] values = new int[BoardSize];
+        //public int[,] Solution= new int[9,9];
 
+        //public int NumberOfCells = 75;
+        public Board GenerateBoard(int size = 9)
+        {
+            int[] values = new int[size];
+            BoardSize = size;
+            BlockSize = (int)Math.Sqrt(size);
             for(int i = 1; i <= BoardSize; i++)
             {
                 values[i-1] = i;
             }
-            int[,] board = new int[9, 9];
+
+            int[,] boardDiagonal = new int[BoardSize, BoardSize];
             for(int row = 0; row < BlockSize; row++)
             {
                 int rowBlock = row*3/BlockSize*BlockSize;
@@ -29,82 +33,86 @@
                 {
                     for(int j = columnBlock; j < columnBlock + BlockSize; j++)
                     {
-                        board[i, j] = values[blockIndex++];
+                        boardDiagonal[i, j] = values[blockIndex++];
                     }
                 }
             }
-            //            Solution = new int[BoardSize, BoardSize];
+            var board = new Board(boardDiagonal);
             SudokuSolver solver = new SudokuSolver(board);
-            solver.SolveBoard();
-            solver.BackTrackingSolve(0, 0);
-            return solver.Grid;
+            solver.BackTrackingSolve();
+            board.SetValidSolution();
+            board.SetFinal();
+
+
+            return board;
         }
 
-        public Cell[,] SetBoard(int clues)
-        {
-            Cell[,] bo = GenerateBoard();
-            List<(int,int)> clue = new List<(int, int)> ();
 
-            for(int rowF = 0; rowF < NumberOfCells -clues;)
+        public Board SetBoard(int clues)
+        {
+            // test number of clues 50;
+            BoardSize = 9;
+            Board board = GenerateBoard();
+            // For testing the Seting of clues on the board wors
+            //            Board board = new Board(new int[,]{
+            //{1,2,3,4,5,6,7,8,9},
+            //{4,5,6,7,8,9,1,2,3},
+            //{7,8,9,1,2,3,4,5,6},
+            //{9,1,2,3,4,5,6,7,8},
+            //{3,4,5,6,7,8,9,1,2},
+            //{6,7,8,9,1,2,3,4,5},
+            //{8,9,1,2,3,4,5,6,7},
+            //{2,3,4,5,6,7,8,9,1},
+            //{5,6,7,8,9,1,2,3,4},
+            //                });
+
+            Stack<Cell> stack = new Stack<Cell>();
+
+            SudokuSolver solver = new SudokuSolver(board);
+            var openCell = new List<Cell>();
+            foreach(var item in board.Grid)
             {
-                int x = random.Next(BoardSize);
-                int y = random.Next(BoardSize);
-                if(!bo[x, y].IsPopulated)
+                openCell.Add(item);
+            }
+            var tempSh = openCell.ToArray();
+            random.Shuffle(tempSh);
+            Stack<Cell> use = new Stack<Cell>();
+            foreach(var item in tempSh)
+            {
+                use.Push(item);
+            }
+            do
+            {
+                var rCell = use.Pop();
+                board.SetOpen(rCell.CellRow, rCell.CellColumn);
+                board.ResetBoard();
+                if(solver.SolveBoard())
                 {
-                    bo[x, y].SetValue(0);
-                    clue.Add((x, y));
-                
-                    if(solver.SolveBoard())
-                    {
-                        foreach((int, int) pos in clue)
-                        {
-                            Grid[pos.Item1, pos.Item2].SetValue( 0);
-                        }
-                        rowF++;
-                    }
-                    else
-                    {
-                        clue.Remove((x, y));
-                    }
+                    //Debug.Assert(board.VerifyBoard());
+                    stack.Push(rCell);
                 }
-            }
-            return bo;
-        }
-
-        public int[] FillValues()
-        {
-            int[] values = new int[BoardSize];
-            for(int index = 1; index <= BoardSize; index++)
-            {
-                values[index-1] = index;
-            }
-            return values;
-        }
-        public void InitilizeGrid(ref int[,] board)
-        {
-            for(int row = 0; row < Grid.GetLength(0); row++)
-            {
-                for(int col = 0; col < Grid.GetLength(1); col++)
+                else
                 {
-                    board[row, col] = 0;
-                }
-            }
-        }
+                    rCell.SetGiven();
 
-        /// <summary>
-        /// This method takes Two board amd Sets teh values from pne to the other.
-        /// </summary>
-        /// <param name="to"> BoardGrid being set </param>
-        /// <param name="from"> Board/Grid values being taken </param>
-        public static void SetAToB(ref int[,] to, int[,] from)
-        {
-            for(int row = 0; row < to.GetLength(0); row++)
-            {
-                for(int col = 0; col < to.GetLength(1); col++)
-                {
-                    to[row, col] = from[row, col];
+                    board.SetGiven(rCell.CellRow, rCell.CellColumn);
+                    //use.Prepend(rCell);
                 }
-            }
+
+            } while(stack.Count<=(BoardSize*BoardSize) - clues && use.Count>0);
+            board.ResetBoard();
+            return board;
         }
     }
 }
+/*
+{0,7,0,0,0,0,6,0,5},
+{0,3,0,6,2,0,0,0,0},
+{0,0,0,4,3,5,0,8,7},
+{0,2,0,0,0,6,0,9,3},
+{0,0,6,0,0,3,1,0,4},
+{0,0,7,9,4,0,0,0,6},
+{0,4,8,3,0,0,5,6,1},
+{0,1,0,0,6,4,0,7,0},
+{0,0,9,0,1,0,0,4,0},
+*/

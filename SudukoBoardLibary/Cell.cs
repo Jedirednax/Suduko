@@ -1,66 +1,58 @@
-﻿namespace SudukoBoardLibary
+﻿namespace SudokuBoardLibrary
 {
     public class Cell
     {
         #region Properties
-        #region private
         private int cellRow;
         private int cellColumn;
         private int cellBlock;
 
-        private int cellIndex;
+        private int cellValue = 0;
+        private int cellSolution = 0;
 
-        private int cellValue;
-        private int cellSolution;
-        private bool isGiven;
-        private bool isPopulated;
-        private List<int> cellPossibilities;
-        #endregion
-        #region SettersGetters
-        public int CellRow { get => cellRow; set => cellRow=value; }
-        public int CellColumn { get => cellColumn; set => cellColumn=value; }
-        public int CellBlock { get => cellBlock; set => cellBlock=value; }
-        public int CellIndex { get => cellIndex; set => cellIndex=value; }
+        private bool isGiven = false;
+        private bool isPopulated = false;
 
+        private List<int> cellPossibilities = new List<int>();
+
+        public int CellRow
+        {
+            get => cellRow;
+            set => cellRow=value;
+        }
+        public int CellColumn
+        {
+            get => cellColumn;
+            set => cellColumn=value;
+        }
         public int CellValue
         {
             get => cellValue;
-
             set
             {
-                if(!IsGiven)
+                if(cellValue != value)
                 {
                     cellValue=value;
-                    if(value == 0)
-                    {
-                        IsPopulated = false;
-                    }
-                    else if(value > 0)
-                    {
-                        IsPopulated = true;
-                    }
                 }
-                else
-                {
-                    cellValue=value;
-                    if(value == 0)
-                    {
-                        IsPopulated = false;
-                    }
-                    else if(value > 0)
-                    {
-                        IsPopulated = true;
-                    }
-                }
+                IsPopulated = (value != 0);
+
             }
         }
-        public int CellSolution { get => cellSolution; set => cellSolution=value; }
+        public int CellBlock
+        {
+            get => cellBlock;
+            set => cellBlock=value;
+        }
+        public int CellSolution
+        {
+            get => cellSolution;
+            set => cellSolution=value;
+        }
         public bool IsGiven
         {
             get => isGiven;
             set => isGiven=value;
         }
-
         public bool IsPopulated
         {
             get => isPopulated;
@@ -70,169 +62,249 @@
         {
             get
             {
-                if(!IsPopulated)
-                {
-
-                    return cellPossibilities;
-                }
-                else
-                {
-                    return null;
-                }
+                return cellPossibilities;
             }
-            set => cellPossibilities=value;
-        }// = new List<int>();
-        #endregion
+
+            set
+            {
+                cellPossibilities=value;
+            }
+        }
         #endregion
 
         #region Constructors
-        public Cell(int row, int col)
+        public Cell(int cellRow, int cellColumn)
         {
-            IsGiven=false;
-            CellRow=row;
-            CellColumn=col;
-            CellBlock=0;
-            CellValue=0;
-
-        }
-        public Cell(int row, int col, int value)
-        {
-            if(value ==0)
-            {
-                IsGiven=false;
-                CellSolution=0;
-            }
-            else
-            {
-                IsGiven=true;
-                CellSolution=value;
-            }
-            CellRow=row;
-            CellColumn=col;
-            CellBlock=0;
-            CellValue=value;
+            CellRow=cellRow;
+            CellColumn=cellColumn;
         }
 
-        public Cell(int row, int col, int value, int block)
+        public Cell(int cellRow, int cellColumn, int cellValue) : this(cellRow, cellColumn)
         {
-            if(value ==0)
+            CellValue=cellValue;
+            CellSolution = CellValue;
+            if(cellValue > 0)
             {
-                IsGiven=false;
-                CellSolution=0;
+                IsGiven = true;
+                IsPopulated = true;
             }
-            else
-            {
-                IsGiven=true;
-                CellSolution=value;
-            }
-            CellRow=row;
-            CellColumn=col;
-            CellBlock=block;
-            CellValue=value;
-        }
-        public void SetSolution(int solValue)
-        {
-            CellSolution=solValue;
         }
 
-        public void SetValue(int value)
-        {
-            CellValue=value;
-        }
         #endregion
-        public bool RemovePossibility(int valueToRemove)
+
+        #region Sets
+        public void Set(int setValue)
         {
-            if(CellPossibilities==null)
+            CellValue=setValue;
+            if(cellValue > 0)
             {
-                return false;
+                CellPossibilities.Clear();
             }
-            CellPossibilities.Remove(valueToRemove);
-            return true;
         }
-        public bool RemovePossibility(ICollection<int> valuesToRemove)
+
+        public void SetGiven()
         {
-            if(CellPossibilities==null)
+            IsGiven = true;
+            CellValue = CellSolution;
+            CellPossibilities = new List<int>();
+        }
+
+        public void SetGiven(int newValue)
+        {
+
+            CellValue=newValue;
+
+            IsGiven = true;
+            CellSolution = CellValue;
+            CellPossibilities.Clear();
+        }
+
+        public void SetOpen()
+        {
+
+            CellValue = 0;
+            IsGiven = false;
+            //CellPossibilities.Clear();
+        }
+
+        public void SetOpen(int newValue)
+        {
+            CellValue = 0;
+            IsGiven = false;
+            CellPossibilities.Clear();
+        }
+
+        public void Reset()
+        {
+            CellValue = 0;
+            CellPossibilities.Clear();
+        }
+        public void Reveal()
+        {
+            if(CellSolution!=0)
+            {
+                CellValue = CellSolution;
+            }
+        }
+        public void SetSolution()
+        {
+            CellSolution = CellValue;
+        }
+
+
+        public bool SetPossibilities(int newPossibilities)
+        {
+            if(!IsPopulated)
+            {
+                if(CellPossibilities == null)
+                {
+                    CellPossibilities = new List<int>();
+                }
+                if(!CellPossibilities.Contains(newPossibilities))
+                {
+
+                    CellPossibilities.Add(newPossibilities);
+                }
+                return true;
+            }
+            else
             {
                 return false;
             }
+        }
+        public bool SetPossibilities(List<int> newPossibilities)
+        {
+            if(!IsPopulated)
+            {
+                if(CellPossibilities == null)
+                {
+                    CellPossibilities = new List<int>();
+                }
+
+                foreach(var newPos in newPossibilities)
+                {
+
+                    if(!CellPossibilities.Contains(newPos))
+                    {
+
+                        CellPossibilities.Add(newPos);
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool RemovePossibilities(int valueToRemove)
+        {
+            if(CellPossibilities == null || CellPossibilities.Count == 0)
+            {
+                return false;
+            }
+            return CellPossibilities.Remove(valueToRemove);
+        }
+
+        public bool RemovePossibilities(List<int> valuesToRemove)
+        {
+            bool removed = false;
+            if(CellPossibilities == null || CellPossibilities.Count == 0)
+            {
+                return false;
+            }
+
             foreach(int valueToRemove in valuesToRemove)
             {
-                CellPossibilities.Remove(valueToRemove);
+                if(CellPossibilities.Remove(valueToRemove))
+                {
+                    removed = true;
+                }
+            }
+
+            return removed;
+        }
+        #endregion
+
+        #region Gets
+        #endregion
+
+        #region Checks
+        public bool IsCorrect()
+        {
+            return CellValue == CellSolution;
+        }
+        public bool ComparePossibilitiesPair(Cell comp)
+        {
+            if(comp == null)
+            {
+                return false;
+            }
+            if(CellPossibilities == null)
+            {
+                return false;
+            }
+            if(comp.CellPossibilities == null)
+            {
+                return false;
+            }
+            if(CellPossibilities.Count !=2)
+            {
+                return false;
+            }
+            if(comp.CellPossibilities.Count !=2)
+            {
+                return false;
+            }
+            //if(CellPossibilities.Any(comp.CellPossibilities.Contains))
+
+            return CellPossibilities.SequenceEqual(comp.CellPossibilities);
+        }
+
+
+        public bool ComparePosition(Cell comp)
+        {
+            if(comp== null)
+            {
+                return false;
+            }
+            if(CellRow != comp.CellRow)
+            {
+                return false;
+            }
+            if(CellColumn != comp.CellColumn)
+            {
+                return false;
             }
             return true;
         }
-        public bool ComparePosition(Cell other)
+        #endregion
+
+        #region Displays
+        public override string ToString()
         {
-            return CellRow == other.CellRow && CellColumn == other.CellColumn;
-        }
-        public bool ComparePossibilities(Cell other)
-        {
-            if(VerifyCell(other))
+            string f = "";
+            if(CellPossibilities != null)
             {
-
-                if(CellPossibilities == null || other.CellPossibilities == null)
+                foreach(int po in CellPossibilities)
                 {
-                    return false;
-                }
-                if(CellPossibilities.Count == 2 && other.CellPossibilities.Count ==2)
-                {
-
-                    if(CellPossibilities[0] == other.CellPossibilities[0]
-                    && CellPossibilities[1] == other.CellPossibilities[1])
-                    {
-                        return true;
-                    }
+                    f += $"{po}:";
                 }
             }
+            string alt ="";
+            if(CellPossibilities != null && CellPossibilities.Count > 0)
+            {
 
-            return false;
+                alt = $"[{f}]";
+            }
+            else
+            {
+                alt = $"{CellValue}";
+            }
+
+            return $"{alt,-20}";
         }
-
-        public bool VerifyCell(Cell other)
-        {
-            if(other != null)
-            {
-                if(!IsPopulated && !other.IsPopulated)
-                {
-                    if(!ComparePosition(other))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public bool isCorrect()
-        {
-            return CellSolution == CellValue;
-        }
-        public override bool Equals(object? obj)
-        {
-            if(obj == null)
-            {
-                return false;
-            }
-
-            if(obj is not Cell)
-            {
-                return false;
-            }
-            Cell? compObj = obj as Cell;
-            if(compObj == null)
-            {
-                return false;
-            }
-
-            if(CellRow != compObj.CellRow || CellColumn != compObj.CellColumn)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public override int GetHashCode() => base.GetHashCode();
 
         public string PrintDebug()
         {
@@ -247,31 +319,10 @@
 
             return $"Cell Debug:\n" +
                 $"\tRow:{CellRow}\tColumn: {CellColumn}\tBlock:{CellBlock}\t\n" +
-                $"\tValue\t{CellValue}:[{f}]\n" +
+                $"\tValue\t{CellValue}:[{f}]:{CellSolution}\n" +
                 $"\tGiven\t{IsGiven}\n" +
                 $"\tIsPop\t{IsPopulated}";
         }
-
-        public override string ToString()
-        {
-            string f = "";
-            if(CellPossibilities != null)
-            {
-                foreach(int po in CellPossibilities)
-                {
-                    f += $"{po}:";
-                }
-            }
-            string alt ="";
-            if(CellValue != 0)
-            {
-                alt = $"{CellValue}";
-            }
-            else
-            {
-                alt = $"[{f}]";
-            }
-            return $"{alt,-16}";
-        }
+        #endregion
     }
 }

@@ -1,54 +1,93 @@
-﻿namespace Suduko
+﻿using SudokuBoardLibrary;
+
+namespace Suduko
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.SetWindowSize(161, 55);
 
-            int[,] InBoard = new int[,]{
-            //{7,0,0,0,8,0,0,3,0},
-            //{0,0,0,0,2,0,9,0,0},
-            //{0,0,0,5,6,0,0,0,8},
-            //{0,0,3,0,0,0,8,0,0},
-            //{0,0,0,0,0,0,0,5,9},
-            //{8,0,0,0,3,9,1,0,7},
-            //{0,7,0,0,0,8,0,0,0},
-            //{0,0,4,0,0,1,0,6,0},
-            //{3,0,1,0,0,6,7,0,0},
 
-           // {7,1,0,9,8,4,6,3,0,},
-           // {0,0,8,1,2,3,9,7,0,},
-           // {0,3,9,5,6,7,0,1,8,},
-           // {0,0,3,0,0,5,8,0,6,},
-           // {0,0,7,8,0,2,3,5,9,},
-           // {8,0,0,6,3,9,1,0,7,},
-           // {0,7,6,3,0,8,0,9,1,},
-           // {0,8,4,0,0,1,0,6,3,},
-           // {3,0,1,0,0,6,7,8,0,},
+            Console.SetWindowSize(210, 55);
 
-               {2,0,0,0,0,0,0,0,0},
-               {0,0,0,4,0,0,1,0,6},
-               {0,0,0,0,7,0,4,0,0},
-               {0,0,5,0,0,0,6,0,0},
-               {6,0,0,0,0,0,0,0,2},
-               {0,7,8,0,2,0,0,0,9},
-               {9,0,7,0,0,0,0,3,0},
-               {0,0,0,1,0,0,7,0,0},
-               {1,0,0,0,0,6,5,0,0},
+            int[,] InBoard = new int[,]
+            {
+//{1,2,3,4,5,6,7,8,9},
+//{4,5,6,7,8,9,1,2,3},
+//{7,8,9,1,2,3,4,5,6},
+//{9,1,2,3,4,5,6,7,8},
+//{3,4,5,6,7,8,9,1,2},
+//{6,7,8,9,1,2,3,4,5},
+//{8,9,1,2,3,4,5,6,7},
+//{2,3,4,5,6,7,8,9,1},
+//{5,6,7,8,9,1,2,3,4},
+
+                //{9,0,0,0,2,0,6,7,0},
+                //{0,0,0,0,3,1,4,0,2},
+                //{0,0,0,7,0,0,9,0,0},
+                //{0,0,9,8,0,0,1,0,7},
+                //{1,0,2,0,0,0,8,9,0},
+                //{0,0,0,0,1,0,0,2,0},
+                //{7,0,4,2,8,0,3,0,0},
+                //{0,0,0,0,6,0,0,4,0},
+                //{0,0,0,3,9,0,7,6,0},
+
+                {7,2,0,4,0,8,0,3,0},
+                {0,8,0,0,0,0,0,4,7},
+                {4,0,1,0,7,6,8,0,2},
+                {8,1,0,7,3,9,0,0,0},
+                {0,0,0,8,5,1,0,0,0},
+                {0,0,0,2,6,4,0,8,0},
+                {2,0,9,6,8,0,4,1,3},
+                {3,4,0,0,0,0,0,0,8},
+                {1,6,8,9,4,3,2,7,5},
             };
+            bool a = true;
+            //a = false;
+            SudukoBoardGenerator generator = new SudukoBoardGenerator();
+            //var board = generator.GenerateBoard();
+            Board board;
 
-            // SudokuSolver solver = new SudokuSolver(InBoard);
+            if(a && InBoard != null)
+            {
+                board = new Board(InBoard);
+            }
+            else
+            {
+                board = generator.SetBoard(30);
+                //board = generator.GenerateBoard();
+            }
+            //board.ColourBoardDisplay();
+            //board.SetValidSolution();
+            //foreach(var f in board.Grid)
+            //{
+            //    Debug.WriteLine(f.PrintDebug(), "Initial Board");
+            //}
 
-            //solver.ColourBoardDisplay();
-            // solver.SolveBoard();
+            SudokuSolver solver = new SudokuSolver(board);
 
-            // solver.ColourBoardDisplay();
-            // solver.SolveBoard();
+            board.ColourBoardDisplay();
+            Console.WriteLine(board.openCells.Count);
+            solver.SolveBoard();
+            //board.SetValidSolution();
+            board.ColourBoardDisplay();
 
-            // solver.ColourBoardDisplay();
 
-            //Console.WriteLine(solver.VerifyBoard());
+            //Console.WriteLine(board.ToArray());
+            //board.SetFinal();
+            //foreach(var f in board.Grid)
+            //{
+            //    Debug.WriteLine(f.PrintDebug(), "Final Board");
+            //}
+            //board.ColourBoardDisplay();
+
+            //board.ResetBoard();
+            //foreach(var f in board.Grid)
+            //{
+            //    Debug.WriteLine(f.PrintDebug(), "Reset Board");
+            //}
+            //board.ColourBoardDisplay();
+            //Console.WriteLine(board.ToArray());
         }
     }
 }

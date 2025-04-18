@@ -1,4 +1,4 @@
-﻿//using SudukoBoardLibary;
+﻿//using SudokuBoardLibrary;
 
 //namespace Suduko
 //{
