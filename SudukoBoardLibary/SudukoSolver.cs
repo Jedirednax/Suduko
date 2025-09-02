@@ -1,4 +1,5 @@
-﻿
+﻿using System.Diagnostics;
+
 namespace SudokuBoardLibrary
 {
     /// <summary>
@@ -8,9 +9,13 @@ namespace SudokuBoardLibrary
     {
         public Board board;
 
-        // TODO Add Hidden Naked pair solving
-        // TODO Add Hidden Naked triple solving
+        // Current Hidden Pairs
+
+        // Done Add Hidden pair solving
+        // TODO Add Remaing in Block
+        // TODO Add Hidden triple solving
         // TODO Add X-Wing
+        // TODO Add XY-Wing
         // TODO Add Y-Wing
         // TODO Add SwordFish
 
@@ -48,6 +53,7 @@ namespace SudokuBoardLibrary
                     }
                 }
             }
+            Debug.WriteLineIf(inserted, "Constraint Solver");
             return inserted;
         }
         #endregion
@@ -84,6 +90,8 @@ namespace SudokuBoardLibrary
                     break;
                 }
             }
+            Debug.WriteLineIf(inserted, "Eliminate Solver");
+
             return inserted;
         }
 
@@ -227,6 +235,7 @@ namespace SudokuBoardLibrary
             }
         }
         #endregion
+
         #region BackTracking
         /// <summary>
         /// Helper method to call backtracking solve with out specifying cords.
@@ -314,6 +323,8 @@ namespace SudokuBoardLibrary
                 }
 
             }
+            Debug.WriteLineIf(inserted, "Obvious Pair set");
+
             return inserted;
         }
 
@@ -449,6 +460,8 @@ namespace SudokuBoardLibrary
                     inserted = true;
                 }
             }
+            Debug.WriteLineIf(inserted, "Obvious Tripple set");
+
             return inserted;
         }
         #region Tripple
@@ -796,22 +809,243 @@ namespace SudokuBoardLibrary
         #endregion
 
         #region Hidden Paris
-        public void HiddenPair()
+        /// <summary>
+        /// Checks the board for two cells that only certain values.
+        /// That can be entered in and no where else.
+        /// Like two cells both only contains 5 and 7,
+        ///
+        /// get the test cell
+        /// check what values it contains
+        /// Then search for if any other cells contain those values, check that only one other cell has those values.
+
+        /// so the rest cannot be 5 or 7 in the block row or column.
+        /// </summary>
+        /// <returns> Returns if a cell was filled. </returns>
+        public bool HiddenPair()
         {
+
+            bool inserted = false;
+
+            //Debug.WriteLine(t.PrintDebug());
+
+            foreach(Cell cl in board.openCells)
+            {
+                if(cl.CellPossibilities==null)
+                {
+                    return false;
+                }
+                if(cl.CellPossibilities.Count==2)
+                {
+
+
+                    if(HiddenPairRow(cl.CellRow, cl.CellColumn))
+                    {
+                        inserted = true;
+                    }
+                    if(HiddenPairCol(cl.CellRow, cl.CellColumn))
+                    {
+                        inserted = true;
+                    }
+                    if(HiddenPairBlock(cl.CellRow, cl.CellColumn))
+                    {
+                        inserted = true;
+                    }
+                }
+
+
+            }
+            Debug.WriteLineIf(inserted, "Hidden Pair set");
+
+            return inserted;
+        }
+
+        /// <summary>
+        /// Checks for obvious pairs in a selected row.
+        /// </summary>
+        /// <param name="inRow"> Row of the Selected cell. </param>
+        /// <param name="inColumn"> Column of the Selected cell. </param>
+        /// <returns> Returns if a possibility was found or entered. </returns>
+        public bool HiddenPairRow(int inRow, int inColumn)
+        {
+            var posis = new int[9] { 0,0,0,0,0,0,0,0,0};
+            var openCElls = board.GetUnPopulatedRowCells(inRow);
+            foreach(var t in openCElls)
+            {
+                if(t.CellPossibilities.Count > 0)
+                {
+                    foreach(var g in t.CellPossibilities)
+                    {
+                        posis[g-1]++;
+                    }
+                }
+            }
+
+            var vals = board.GetRowPossibilities(inRow);
+            var ToSave = new List<int>();
+            for(int i = 0; i < board.BoardSize; i++)
+            {
+                if(posis[i] == 2)
+                {
+                    ToSave.Add(i+1);
+                    //Debug.WriteLine(posis[i], "ToKeep");
+                    //vals.Remove(i+1);
+                    vals.RemoveAll(x => x ==i+1);
+                    //    Debug.WriteLine(i+1, "ToAlter");
+                }
+                //  else
+                //  {
+                //
+                //      Debug.WriteLine(posis[i], "ToLarge");
+                //  }
+            }
+            //foreach(var t in ToSave)
+            //{
+            //    Debug.WriteLine(t, "Save");
+            //}
+
+            var saftyList = new List<Cell>();
+            if(ToSave.Count > 2)
+            {
+
+                foreach(var f in openCElls)
+                {
+                    //  Debug.WriteLine(f.PrintDebug());
+                    if(f.CellPossibilities.Contains(ToSave[0]) || f.CellPossibilities.Contains(ToSave[1]))
+                    {
+                        saftyList.Add(f);
+                    }
+                    //    Debug.WriteLine(f.PrintDebug());
+                }
+
+            }
+
+            if(saftyList.Count ==2)
+            {
+                foreach(var f in saftyList)
+                {
+
+                    f.RemovePossibilities(vals);
+                }
+            }
+
+            return false;
+
+        }
+
+        /// <summary>
+        /// Checks for obvious pairs in a selected column.
+        /// </summary>
+        /// <param name="inRow"> Row of the Selected cell. </param>
+        /// <param name="inColumn"> Column of the Selected cell. </param>
+        /// <returns> Returns if a possibility was found or entered. </returns>
+        public bool HiddenPairCol(int inRow, int inColumn)
+        {
+            var posis = new int[9] { 0,0,0,0,0,0,0,0,0};
+            var openCElls = board.GetUnPopulatedColumnCells(inColumn);
+            foreach(var t in openCElls)
+            {
+                if(t.CellPossibilities.Count > 0)
+                {
+                    foreach(var g in t.CellPossibilities)
+                    {
+                        posis[g-1]++;
+                    }
+                }
+            }
+
+            var vals = board.GetColumnPossibilities(inColumn);
+            var ToSave = new List<int>();
+            for(int i = 0; i < board.BoardSize; i++)
+            {
+                if(posis[i] == 2)
+                {
+                    ToSave.Add(i+1);
+                    vals.RemoveAll(x => x ==i+1);
+                }
+            }
+
+            var saftyList = new List<Cell>();
+            if(ToSave.Count ==2)
+            {
+                foreach(var f in openCElls)
+                {
+                    if(f.CellPossibilities.Contains(ToSave[0]) || f.CellPossibilities.Contains(ToSave[1]))
+                    {
+                        saftyList.Add(f);
+                    }
+                }
+            }
+
+            if(saftyList.Count ==2)
+            {
+                foreach(var f in saftyList)
+                {
+                    f.RemovePossibilities(vals);
+                }
+            }
+
+            return false;
+
+        }
+
+        /// <summary>
+        /// Checks for obvious pairs in a selected block.
+        /// </summary>
+        /// <param name="inRow"> Row of the Selected cell. </param>
+        /// <param name="inColumn"> Column of the Selected cell. </param>
+        /// <returns> Returns if a possibility was found or entered. </returns>
+        public bool HiddenPairBlock(int inRow, int inColumn)
+        {
+            var posis = new int[9] { 0,0,0,0,0,0,0,0,0};
+            var openCElls = board.GetUnPopulatedBlockCells(inRow, inColumn);
+            foreach(var t in openCElls)
+            {
+                if(t.CellPossibilities.Count > 0)
+                {
+                    foreach(var g in t.CellPossibilities)
+                    {
+                        posis[g-1]++;
+                    }
+                }
+            }
+
+            var vals = board.GetBlockPossibilities(inRow, inColumn);
+            var ToSave = new List<int>();
+            for(int i = 0; i < board.BoardSize; i++)
+            {
+                if(posis[i] == 2)
+                {
+                    ToSave.Add(i+1);
+                    vals.RemoveAll(x => x ==i+1);
+                }
+            }
+
+            var saftyList = new List<Cell>();
+            if(ToSave.Count ==2)
+            {
+                foreach(var f in openCElls)
+                {
+                    if(f.CellPossibilities.Contains(ToSave[0]) || f.CellPossibilities.Contains(ToSave[1]))
+                    {
+                        saftyList.Add(f);
+                    }
+                }
+            }
+
+            if(saftyList.Count ==2)
+            {
+                foreach(var f in saftyList)
+                {
+                    f.RemovePossibilities(vals);
+                }
+            }
+
+            return false;
+
 
         }
         #endregion
-        #region X-Wing
-        public void XWing()
-        {
 
-        }
-        #endregion
-        #region Y-Wing
-        public void YWing()
-        {
-        }
-        #endregion
         #region PointingPairs
         /// <summary>
         /// Checks values do not eliminate a row column or block by having only a certain value,
@@ -820,12 +1054,20 @@ namespace SudokuBoardLibrary
         /// <returns>  </returns>
         public bool PointingPair()
         {
+            bool inserted = false;
             foreach(var t in board.openCells)
             {
-                PointingPairRow(t.CellRow, t.CellColumn);
-                PointingPairCol(t.CellRow, t.CellColumn);
+                if(
+                PointingPairRow(t.CellRow, t.CellColumn))
+                {
+                    inserted = true;
+                }
+                if(PointingPairCol(t.CellRow, t.CellColumn))
+                {
+                    inserted = true;
+                }
             }
-            return false;
+            return inserted;
         }
 
         /// <summary>
@@ -965,7 +1207,430 @@ namespace SudokuBoardLibrary
 
             return false;
         }
+
+        /// <summary>
+        /// Checks the columns for pointing pairs.
+        /// </summary>
+        /// <param name="inRow"> Row of the Selected cell. </param>
+        /// <param name="inColumn"> Column of the Selected cell. </param>
+        /// <returns> Returns if an instance of pointing triples was found. </returns>
+        public bool PointingTripleCol(int inRow, int inColumn)
+        {
+            Cell startCell = board.GetCell(inRow, inColumn);
+
+            // GetCell cells block.
+            // Loop through other columns of block.
+            var fullBlock = board.GetBlockPossibilities(inRow, inColumn);
+
+            HashSet<int> uniqueValues = new HashSet<int>();
+            foreach(int cellPosb in fullBlock)
+            {
+                uniqueValues.Add(cellPosb);
+            }
+
+            // Check if column has possibilities.
+            int blockSize = board.BlockSize;
+            int rowOffset = inRow/board.BlockSize*board.BlockSize;
+            int colOffset = inColumn/board.BlockSize*board.BlockSize;
+            int co = 0;
+            for(int blkRow = rowOffset; blkRow < (rowOffset + blockSize); blkRow++)
+            {
+                var j = board.GetCellPossibilities(blkRow, inColumn);
+                if(j != null)
+                {
+                    // If they don't remove from current column.
+                    foreach(int f in j)
+                    {
+                        fullBlock.Remove(f);
+                    }
+                    co++;
+                }
+            }
+            if(co < 2)
+            {
+                return false;
+            }
+
+            // Check oif the contain any values form current column.
+            int missingValue = 0;
+            foreach(var g in uniqueValues)
+            {
+                if(!fullBlock.Contains(g))
+                {
+                    missingValue = g;
+                    break;
+                }
+            }
+
+            if(missingValue > 0)
+            {
+                for(int row = 0; row < board.Grid.GetLength(0); row++)
+                {
+                    if(board.GetCell(row, inColumn).CellBlock != startCell.CellBlock)
+                    {
+                        board.Grid[row, inColumn].RemovePossibilities(missingValue);
+                    }
+                }
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks the columns for pointing pairs.
+        /// </summary>
+        /// <param name="inRow"> Row of the Selected cell. </param>
+        /// <param name="inColumn"> Column of the Selected cell. </param>
+        /// <returns> Returns if an instance of pointing triples was found. </returns>
+        public bool PointingTripleRow(int inRow, int inColumn)
+        {
+            Cell startCell = board.GetCell(inRow, inColumn);
+
+            // GetCell cells block.
+            // Loop through other columns of block.
+            var fullBlock = board.GetBlockPossibilities(inRow, inColumn);
+
+            HashSet<int> uniqueValues = new HashSet<int>();
+            foreach(int cellPosb in fullBlock)
+            {
+                uniqueValues.Add(cellPosb);
+            }
+
+            // CHeck if column has possibilities.
+            int blockSize = board.BlockSize;
+            int rowOffset = inRow/board.BlockSize*board.BlockSize;
+            int colOffset = inColumn/board.BlockSize*board.BlockSize;
+            int ro = 0;
+            for(int blkCol = colOffset; blkCol <(colOffset + blockSize); blkCol++)
+            {
+                var j = board.GetCellPossibilities(inRow, blkCol);
+                if(j != null)
+                {
+                    // If they don't remove from current column.
+                    foreach(int f in j)
+                    {
+                        fullBlock.Remove(f);
+                    }
+                    ro++;
+                }
+            }
+            if(ro<2)
+            {
+                return false;
+            }
+
+            // Check oif the contain any values form current column.
+            int missingValue = 0;
+            foreach(var g in uniqueValues)
+            {
+                if(!fullBlock.Contains(g))
+                {
+                    missingValue = g;
+                    break;
+                }
+            }
+
+            if(missingValue > 0)
+            {
+                for(int col = 0; col < board.Grid.GetLength(0); col++)
+                {
+                    if(board.GetCell(inRow, col).CellBlock != startCell.CellBlock)
+                    {
+                        board.Grid[inRow, col].RemovePossibilities(missingValue);
+                    }
+                }
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks values do not eliminate a row column or block by having only a certain value,
+        /// present on only one row or column in a block.
+        /// </summary>
+        /// <returns>  </returns>
+        public bool RemainingBlocks()
+        {
+            foreach(var t in board.openCells)
+            {
+                RemainingBlockRow(t.CellRow, t.CellColumn);
+                RemainingBlockColumn(t.CellRow, t.CellColumn);
+            }
+            return false;
+        }
+        /// <summary>
+        /// Checks the columns for pointing pairs.
+        /// </summary>
+        /// <param name="inRow"> Row of the Selected cell. </param>
+        /// <param name="inColumn"> Column of the Selected cell. </param>
+        /// <returns> Returns if an instance of pointing pairs was found. </returns>
+        public bool RemainingBlockRow(int inRow, int inColumn)
+        {
+            Cell startCell = board.GetCell(inRow, inColumn);
+
+            var cellBlock = startCell.CellBlock;
+            var tempList = new HashSet<int>();
+            foreach(var outtter in board.GetUnPopulatedRowCells(startCell.CellRow))
+            {
+                if(outtter.CellBlock != startCell.CellBlock)
+                {
+                    foreach(var cp in outtter.CellPossibilities)
+                    {
+                        tempList.Add(cp);
+                    }
+                }
+            }
+            var tempHOld = new List<int>();
+            var hold = startCell.CellPossibilities;
+            foreach(var g in hold)
+            {
+                if(!tempList.Contains(g))
+                {
+                    tempHOld.Add(g);
+                }
+            }
+
+
+            //foreach(var f in tempHOld)
+            //{
+            //    Debug.WriteLine(f);
+            //
+            //}
+
+
+
+            var blockOther = board.GetUnPopulatedBlockCells(inRow,inColumn);
+
+            //blockOther.RemoveAll(x => x.CellRow == inRow);
+            foreach(var cl in blockOther)
+            {
+                if(cl.CellRow != startCell.CellRow)
+                {
+                    cl.RemovePossibilities(tempHOld);
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        /// Checks the columns for pointing pairs.
+        /// </summary>
+        /// <param name="inRow"> Row of the Selected cell. </param>
+        /// <param name="inColumn"> Column of the Selected cell. </param>
+        /// <returns> Returns if an instance of pointing pairs was found. </returns>
+        public bool RemainingBlockColumn(int inRow, int inColumn)
+        {
+            Cell startCell = board.GetCell(inRow, inColumn);
+
+            var cellBlock = startCell.CellBlock;
+            var tempList = new HashSet<int>();
+            foreach(var outtter in board.GetUnPopulatedColumnCells(startCell.CellColumn))
+            {
+                if(outtter.CellBlock != startCell.CellBlock)
+                {
+                    foreach(var cp in outtter.CellPossibilities)
+                    {
+                        tempList.Add(cp);
+                    }
+                }
+            }
+            var tempHOld = new List<int>();
+            var hold = startCell.CellPossibilities;
+            foreach(var g in hold)
+            {
+                if(!tempList.Contains(g))
+                {
+                    tempHOld.Add(g);
+                }
+            }
+
+
+            //foreach(var f in tempHOld)
+            //{
+            //    Debug.WriteLine(f);
+            //
+            //}
+
+
+
+            var blockOther = board.GetUnPopulatedBlockCells(inRow,inColumn);
+
+            //blockOther.RemoveAll(x => x.CellRow == inRow);
+            foreach(var cl in blockOther)
+            {
+                if(cl.CellColumn != startCell.CellColumn)
+                {
+                    cl.RemovePossibilities(tempHOld);
+                }
+            }
+            return false;
+        }
         #endregion
+        #region XY-Wing
+        public bool XYWing()
+        {
+            foreach(var t in board.openCells)
+            {
+                XYWingRowCol(t.CellRow, t.CellColumn);
+
+            }
+            return false;
+        }
+
+        public void XYWingRowCol(int inRow, int inColumn)
+        {
+            //(2,6);
+            // Get starting cell
+
+            Cell startCell = board.GetCell(inRow, inColumn);
+            Debug.WriteLine($"{inRow}:{inColumn}\n {startCell}", "StartCells");
+            if(startCell.CellPossibilities.Count == 2)
+            {
+                Debug.WriteLine("Checking Rows");
+                // Set x and y values to reference
+                int X = startCell.CellPossibilities[0];
+                int Y = startCell.CellPossibilities[1];
+
+                // Holder for value to be removed.
+                int Z = 0;
+
+                Cell? rowCell = startCell;
+                Cell? columnCell = startCell;
+
+                // Check each Column in the row for matching values
+                for(int i = 0; i < 9; i++)
+                {
+                    if(i != inColumn)
+                    {
+                        //row value contating Y
+                        var tempCell = board.GetCell(inRow, i);
+
+
+                        if(tempCell.CellPossibilities != null && tempCell.CellPossibilities.Count == 2 && tempCell != startCell)
+                        {
+                            Debug.WriteLine(tempCell.PrintDebug(), "Loop A");
+                            if(tempCell.CellPossibilities.Contains(X) ||
+                                tempCell.CellPossibilities.Contains(Y))
+                            {
+
+                                Debug.WriteLine(tempCell.PrintDebug(), "Loop B");
+                                rowCell = tempCell;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                Debug.WriteLine("");
+                Debug.WriteLine("Checking Columns");
+
+                // Check each row in the column for matching values
+                for(int i = 0; i < 9; i++)
+                {
+                    if(i != inRow)
+                    {
+
+                        // column value contating X
+                        var tempCell = board.GetCell(i, inColumn);
+
+
+                        if(tempCell.CellPossibilities != null && tempCell.CellPossibilities.Count == 2 && tempCell != rowCell && tempCell != startCell)
+                        {
+                            if(tempCell.CellPossibilities != rowCell.CellPossibilities)
+                            {
+
+                                Debug.WriteLine(tempCell.PrintDebug(), "Loop A");
+                                if(tempCell.CellPossibilities.Contains(X) ||
+                                    tempCell.CellPossibilities.Contains(Y))
+                                {
+
+                                    Debug.WriteLine(tempCell.PrintDebug(), "Loop B");
+                                    columnCell = tempCell;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                var targetCell = board.GetCell(columnCell.CellRow,rowCell.CellColumn);
+
+                int valRem = 0;
+                //var allPosisbilitiess = columnCell.CellPossibilities
+                HashSet<int> allPos = new HashSet<int>();
+                foreach(var h in rowCell.CellPossibilities)
+                {
+
+                    allPos.Add(h);
+                }
+                foreach(var h in columnCell.CellPossibilities)
+                {
+
+                    allPos.Add(h);
+                }
+
+                foreach(var h in allPos)
+                {
+                    if(rowCell.CellPossibilities.Contains(h) && columnCell.CellPossibilities.Contains(h))
+                    {
+                        valRem = h;
+                        break;
+                    }
+                }
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine(valRem);
+                Debug.WriteLine(targetCell.PrintDebug(), "Target being changed");
+
+                targetCell.RemovePossibilities(valRem);
+            }
+            Console.ReadLine();
+            board.ColourBoardDisplay();
+        }
+
+
+
+
+
+
+
+        public void XYWingBlockRow(int inRow, int inColumn)
+        {
+
+        }
+        public void XYWingBlockCol(int inRow, int inColumn)
+        {
+
+        }
+
+
+        #endregion
+        #region X-Wing
+        public void XWing()
+        {
+
+        }
+
+        public void XWingRow()
+        {
+
+        }
+
+        public void XWingColumn()
+        {
+
+        }
+        #endregion
+
+        #region Y-Wing
+        public void YWing()
+        {
+        }
+        #endregion
+
+
         #region SwordFish
 
         public void SwordFish()
@@ -982,6 +1647,10 @@ namespace SudokuBoardLibrary
             PointingPair();
             ObviousPair();
             ObviousTrip();
+            HiddenPair();
+            RemainingBlocks();
+            XYWing();
+
         }
 
         /// <summary>
@@ -994,7 +1663,7 @@ namespace SudokuBoardLibrary
             int a = 0;
             bool Inserted = false;
             int counter = 0;
-
+            UpdatePos();
             do
             {
                 counter = 0;
@@ -1038,6 +1707,7 @@ namespace SudokuBoardLibrary
                 mainExit = a<=6;
             }
             while(mainExit);
+            //HiddenPair();
             return board.VerifyBoard();
         }
     }

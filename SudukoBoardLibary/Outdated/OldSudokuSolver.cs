@@ -7,13 +7,13 @@
 //    /// </summary>
 //    public class SudokuSolver
 //    {
-//        // TODO Add Naked pair solving
-//        // TODO Add Hidden Naked pair solving
-//        // TODO Add Naked tripple solving
-//        // TODO Add Hidden Naked tripple solving
-//        // TODO Add X-Wing
-//        // TODO Add Y-Wing
-//        // TODO Add SwordFish
+//        // Add Naked pair solving
+//        // Add Hidden Naked pair solving
+//        // Add Naked tripple solving
+//        // Add Hidden Naked tripple solving
+//        // Add X-Wing
+//        // Add Y-Wing
+//        // Add SwordFish
 
 //        public int BoardSize = 9;
 //        public int BlockSize = 3;

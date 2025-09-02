@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SudukoBoardLibary\SudukoBoardLibary.csproj" />
+    <ProjectReference Include="..\SudukoBoardLibary\SudokuBoardLibary.csproj" />
   </ItemGroup>
 
 </Project>

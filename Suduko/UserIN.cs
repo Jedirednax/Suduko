@@ -1,6 +1,6 @@
 ﻿//using SudokuBoardLibrary;
 
-//namespace Suduko
+//namespace Sudoku
 //{
 //    internal class UserIN
 //    {

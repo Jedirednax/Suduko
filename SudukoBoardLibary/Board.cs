@@ -754,7 +754,7 @@ namespace SudokuBoardLibrary
         #endregion
         #region GetFull
         /// <summary>
-        /// Gets all the Given and Populated cells <see cref="Cell"/> in the Row.
+        /// Gets all thecells <see cref="Cell"/> Populated Or Not in the Row.
         /// </summary>
         /// <param name="inRow"> Row of the Selected cell. </param>
         /// <returns> Returns all the Given and Populated cells <see cref="Cell"/>. </returns>
@@ -1023,7 +1023,7 @@ namespace SudokuBoardLibrary
                             Console.ForegroundColor = ConsoleColor.Blue;
                         }
                     }
-                    Console.Write($"{cell.ToString(),-8}");
+                    Console.Write($"{cell.ToString(),-4}");
                     Console.ForegroundColor = ConsoleColor.Gray;
                     if(((column+1)%BlockSize) == 0)
                     {
@@ -1048,7 +1048,7 @@ namespace SudokuBoardLibrary
             for(int row = 0; row < BoardSize; row++)
             {
                 sb.AppendLine();
-                sb.Append("{");
+                sb.Append('{');
                 for(int column = 0; column < BoardSize; column++)
                 {
                     sb.Append($"{GetCell(row, column).CellValue},");

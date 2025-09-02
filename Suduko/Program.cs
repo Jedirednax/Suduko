@@ -1,6 +1,6 @@
 ﻿using SudokuBoardLibrary;
 
-namespace Suduko
+namespace Sudoku
 {
     internal class Program
     {
@@ -10,38 +10,46 @@ namespace Suduko
 
             Console.SetWindowSize(210, 55);
 
-            int[,] InBoard = new int[,]
+            /*int[,] InBoard = new int[,]
             {
-//{1,2,3,4,5,6,7,8,9},
-//{4,5,6,7,8,9,1,2,3},
-//{7,8,9,1,2,3,4,5,6},
-//{9,1,2,3,4,5,6,7,8},
-//{3,4,5,6,7,8,9,1,2},
-//{6,7,8,9,1,2,3,4,5},
-//{8,9,1,2,3,4,5,6,7},
-//{2,3,4,5,6,7,8,9,1},
-//{5,6,7,8,9,1,2,3,4},
+                //{1,2,3,4,5,6,7,8,9},
+                //{4,5,6,7,8,9,1,2,3},
+                //{7,8,9,1,2,3,4,5,6},
+                //{9,1,2,3,4,5,6,7,8},
+                //{3,4,5,6,7,8,9,1,2},
+                //{6,7,8,9,1,2,3,4,5},
+                //{8,9,1,2,3,4,5,6,7},
+                //{2,3,4,5,6,7,8,9,1},
+                //{5,6,7,8,9,1,2,3,4},
 
-                //{9,0,0,0,2,0,6,7,0},
-                //{0,0,0,0,3,1,4,0,2},
-                //{0,0,0,7,0,0,9,0,0},
-                //{0,0,9,8,0,0,1,0,7},
-                //{1,0,2,0,0,0,8,9,0},
-                //{0,0,0,0,1,0,0,2,0},
-                //{7,0,4,2,8,0,3,0,0},
-                //{0,0,0,0,6,0,0,4,0},
-                //{0,0,0,3,9,0,7,6,0},
 
-                {7,2,0,4,0,8,0,3,0},
-                {0,8,0,0,0,0,0,4,7},
-                {4,0,1,0,7,6,8,0,2},
-                {8,1,0,7,3,9,0,0,0},
-                {0,0,0,8,5,1,0,0,0},
-                {0,0,0,2,6,4,0,8,0},
-                {2,0,9,6,8,0,4,1,3},
-                {3,4,0,0,0,0,0,0,8},
-                {1,6,8,9,4,3,2,7,5},
-            };
+{0,2,0,0,5,6,0,0,0,},
+{4,5,0,0,0,0,0,0,0,},
+{0,0,9,1,0,0,0,0,0,},
+{0,0,0,0,0,0,0,7,0,},
+{0,0,5,6,7,0,0,1,2,},
+{6,0,0,0,0,2,3,0,5,},
+{0,9,0,0,3,0,0,0,0,},
+{0,3,0,0,6,7,8,0,1,},
+{5,6,7,0,0,0,0,0,0,},
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
+            };*/
+            //int[,] InBoard = BoardTypes.LockedCandidatesBlockWithinRow;
+            //int[,] InBoard = BoardTypes.LockedCandidatesBlockWithinRow;
+            int[,] InBoard = BoardTypes.XYWingRowCol;
+            //int[,] InBoard = BoardTypes.HiddenPair;
+            //InBoard = BoardTypes.HiddenPairInAColumn;
+
             bool a = true;
             //a = false;
             SudukoBoardGenerator generator = new SudukoBoardGenerator();
@@ -54,7 +62,7 @@ namespace Suduko
             }
             else
             {
-                board = generator.SetBoard(30);
+                board = generator.SetBoard(25);
                 //board = generator.GenerateBoard();
             }
             //board.ColourBoardDisplay();
@@ -64,13 +72,32 @@ namespace Suduko
             //    Debug.WriteLine(f.PrintDebug(), "Initial Board");
             //}
 
-            SudokuSolver solver = new SudokuSolver(board);
+            //var g = board.GetBlockCells(3,2);
+            //var g = board.GetBlockCells(3,2);
 
+            //foreach(var cell in g)
+            //{
+            //    Console.WriteLine(cell.PrintDebug());
+            //}
+
+            SudokuSolver solver = new SudokuSolver(board);
+            //Console.WriteLine(board.ToArray());
             board.ColourBoardDisplay();
-            Console.WriteLine(board.openCells.Count);
-            solver.SolveBoard();
+
+            //Console.WriteLine(board.openCells.Count);
+            //var o = solver.HiddenPairCol(3, 2);
+            //solver.UpdatePos();
+            //solver.ObviousTrip();
+            //solver.ObviousTripBlock(5, 6);
+            //solver.SolveBoard();
+            solver.XYWing();
+            //solver.XYWingRowCol(2, 6);
+            solver.board.ColourBoardDisplay();
             //board.SetValidSolution();
-            board.ColourBoardDisplay();
+            //solver.PointingPairBlock(0, 7);
+            //board.ColourBoardDisplay();
+            //Console.WriteLine(board.ToArray());
+            //Console.WriteLine(board.ToString());
 
 
             //Console.WriteLine(board.ToArray());

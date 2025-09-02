@@ -303,7 +303,7 @@
                 alt = $"{CellValue}";
             }
 
-            return $"{alt,-20}";
+            return $"{alt,-12}";
         }
 
         public string PrintDebug()
